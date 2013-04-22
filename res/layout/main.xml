@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/LinearLayout01"
-    android:layout_width="80dp"
-    android:layout_height="50dp"
-    android:background="#999"
-    android:orientation="horizontal" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical|center_horizontal"
+    android:padding="@dimen/widget_margin" >
 
     <TextView
+        android:id="@+id/airvoicename"
+        android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:text="Airvoice Wireless"
+        android:background="#77999999"
+        android:textColor="@android:color/black"
+        android:textSize="8sp" />
+    <TextView
         android:id="@+id/dataTextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+    	android:background="@drawable/background"
+    	android:layout_height="45dp"
         android:gravity="center_vertical|center_horizontal"
         android:text="---"
         android:textColor="@android:color/black"
-        android:textSize="12sp" />
+        android:textSize="10sp" />
 
 </LinearLayout>

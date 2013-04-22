@@ -1,68 +1,201 @@
 package com.finfrock.airvoicewidget;
 
-import com.finfrock.airvoicewidget.R;
+import java.text.DecimalFormat;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.widget.RemoteViews;
 
 public class AirvoiceDisplay extends AppWidgetProvider {
-	public static final String WIDGET_IDS_KEY ="mywidgetproviderwidgetids";
-	public static final String WIDGET_DATA_KEY ="mywidgetproviderwidgetdata";
+
+	public static final String WIDGET_IDS_KEY = "mywidgetproviderwidgetids";
 	
-	public static final String MONEY_DISPLAY_TYPE = "Money";
-	public static final String DATA_DISPLAY_TYPE = "Data";
-	public static final String MINUTES_DISPLAY_TYPE = "Minutes";
-	
+	private static final String NO_DATA_FOUND_TAG = "---";
+	private static final double COST_PER_MINUTE = 0.1;
+	private static final double COST_PER_MB = 0.33;
+	private static final String MONEY_DISPLAY_TYPE = "Money";
+	private static final String DATA_DISPLAY_TYPE = "Data";
+	private static final String MINUTES_DISPLAY_TYPE = "Minutes";
+	// -------------------------------------------------------------------------
+	// Private Data
+	// -------------------------------------------------------------------------
+
+	private SharedStorage sharedStorage = new SharedStorage();
+
+	// -------------------------------------------------------------------------
+	// AppWidgetProvider Members
+	// -------------------------------------------------------------------------
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
-	    if (intent.hasExtra(WIDGET_IDS_KEY)) {
-	        int[] ids = intent.getExtras().getIntArray(WIDGET_IDS_KEY);
-	        this.onUpdate(context, AppWidgetManager.getInstance(context), ids);
-	    } else super.onReceive(context, intent);
+		if (intent.hasExtra(WIDGET_IDS_KEY)) {
+			int[] ids = intent.getExtras().getIntArray(WIDGET_IDS_KEY);
+			onUpdate(context, AppWidgetManager.getInstance(context), ids);
+		} else {
+			super.onReceive(context, intent);
+		}
 	}
-	    
+
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-
+        
 		update(context, appWidgetManager, appWidgetIds);
 	}
 	
-	private void update(Context context, AppWidgetManager appWidgetManager,
-			int[] appWidgetIds){
-		for (int i = 0; i < appWidgetIds.length; i++) {
-			int appWidgetId = appWidgetIds[i];
-			
-			String phoneNumber = 
-				AirvoiceWidgetConfigure.phoneNumberPref(context, appWidgetId);
-			String displayType = 
-					AirvoiceWidgetConfigure.displayType(context, appWidgetId);
+	// -------------------------------------------------------------------------
+	// Private Members
+	// -------------------------------------------------------------------------
 
+	/**
+	 * Used for the background thread request
+	 * any network request needs to be off the main thread
+	 */
+	private class Storage{
+		public Context context;
+		public int appWidgetId;
+		public String widgetText;
+		public AppWidgetManager appWidgetManager;
+		public int[] appWidgetIds;
+	}
+	
+	private void update(Context context, AppWidgetManager appWidgetManager,
+			int[] appWidgetIds) {
+		
+		for (int appWidgetId : appWidgetIds) {
+			String phoneNumber = sharedStorage.getPhoneNumber(
+					context, appWidgetId);
+			String displayType = sharedStorage.getDisplayType(context,
+					appWidgetId);
+			
+			startBackgroundRequest(context, appWidgetId, 
+					appWidgetManager, appWidgetIds, phoneNumber, displayType);
+			
 			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
 					R.layout.main);
 
-			String text = "---";
+			remoteViews.setTextViewText(R.id.dataTextView, "---");
 
-			try {
-				text = getData(phoneNumber, displayType);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			remoteViews.setTextViewText(R.id.dataTextView, text);
-
-			appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+			appWidgetManager.updateAppWidget(appWidgetId,
+					remoteViews);
 		}
 	}
+	
+	/**
+	 * A background thread is created because any network request needs to be off the main thread
+	 */
+	private void startBackgroundRequest(Context context, int appWidgetId, 
+			AppWidgetManager appWidgetManager, int[] appWidgetIds, String phoneNumber,
+			String displayType){
+		(new AsyncTask<Object, Void, Storage>(){
+			protected Storage doInBackground(Object... args) {
+				try {
+					Storage storage = new Storage();
 
-	private String getData(String phoneNumber, String displayType) throws Exception {
-		HttpRetiever httpSender = new HttpRetiever();
+					storage.context = (Context) args[0];
+					storage.appWidgetId = (Integer) args[1];
+					storage.appWidgetManager = (AppWidgetManager) args[2];
+					storage.appWidgetIds = (int[]) args[3];
+					String phoneNumber = (String) args[4];
+					String displayType = (String) args[5];
 
+					storage.widgetText = getTextForWidget(phoneNumber, displayType);
+
+					return storage;
+				} catch (Exception e) {
+					return null;
+				}
+			}
+
+			protected void onPostExecute(Storage storage) {
+				RemoteViews remoteViews = buildRemoteViews(storage.context,
+						storage.widgetText, storage.appWidgetIds, storage.appWidgetId);
+
+				storage.appWidgetManager.updateAppWidget(storage.appWidgetId,
+						remoteViews);
+			}
+		}).execute(context, appWidgetId, appWidgetManager, appWidgetIds, phoneNumber, displayType);
+	}
+	
+	private RemoteViews buildRemoteViews(Context context, String widgetText,
+			int[] appWidgetIds, int appWidgetId) {
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+				R.layout.main);
+
+		remoteViews.setTextViewText(R.id.dataTextView, widgetText);
+
+		Intent intent = new Intent(context, AirvoiceDisplay.class);
+
+		Uri data = Uri.withAppendedPath(Uri.parse("av" + "://widget/id/"),
+				String.valueOf(appWidgetId));
+		intent.setData(data);
+		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent);
+		remoteViews.setOnClickPendingIntent(R.id.dataTextView, pendingIntent);
+
+		return remoteViews;
+	}
+	
+	private String getTextForWidget(String phoneNumber, String displayType) {
+
+		String text = NO_DATA_FOUND_TAG;
+
+		Double dollarValueAmountLeft = getDoubleAmountLeft(phoneNumber);
+		
+		if (dollarValueAmountLeft != null) {
+			if (displayType.equals(MONEY_DISPLAY_TYPE)) {
+				DecimalFormat df = new DecimalFormat("#.00");
+				text = "$" + df.format(dollarValueAmountLeft);
+			} else if (displayType.equals(DATA_DISPLAY_TYPE)) {
+				double mbs = dollarValueAmountLeft / COST_PER_MB;
+				DecimalFormat df = new DecimalFormat("#.00");
+				text = df.format(mbs) + " MB";
+			} else if (displayType.equals(MINUTES_DISPLAY_TYPE)) {
+				double mins = dollarValueAmountLeft / COST_PER_MINUTE;
+				text = Math.round(mins) + " mins";
+			}
+		}
+		return text;
+	}
+	
+	private Double getDoubleAmountLeft(String phoneNumber) {
+		Double value = null;
+		try {
+			HttpRetiever httpSender = new HttpRetiever();
+
+			HttpPart[] httpParts = buildHttpParts(phoneNumber);
+
+			String result = httpSender.sendPostMessage(
+					"http://csi.airvoicewireless.com/ericssonTpspApiPublic.aspx",
+							httpParts);
+
+			String dollarValueAmountLeft = getValueInHtml(result,
+					"mainAccountBalance");
+
+			if (dollarValueAmountLeft.contains("$")) {
+				
+				value = Double.parseDouble(dollarValueAmountLeft.replace("$", ""));
+			}
+		} catch (Exception ex) {
+			System.out.println("in catch: " + ex.getMessage());
+			
+		}
+
+		return value;
+	}
+	
+	private HttpPart[] buildHttpParts(String phoneNumber){
 		HttpPart[] httpParts = new HttpPart[4];
 
 		httpParts[0] = new HttpPart();
@@ -82,78 +215,16 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		httpParts[3].setName("__EVENTVALIDATION");
 		httpParts[3]
 				.setValue("/wEWBQKrt4UNAvXNlYYNAviw+NENAv/60p0OArP42eoCM18TGGMql5Z58olLEz4T3pkwlMg=");
-
-		String result = httpSender.sendPostMessage(
-				"http://csi.airvoicewireless.com/ericssonTpspApiPublic.aspx",
-				httpParts);
-
-		String costLeft = getValueInHtml(result, "mainAccountBalance");
 		
-		String text = "---";
-		
-		if (displayType.equals(MONEY_DISPLAY_TYPE) && costLeft.contains("$")) {
-			text = costLeft;
-		} else if (displayType.equals(DATA_DISPLAY_TYPE)) {
-			costLeft = costLeft.replace("$", "");
-
-			try {
-				double costValue = Double.parseDouble(costLeft);
-				double mbs = costValue / .33;
-				text = Math.round(mbs) + " MB";
-			} catch (Exception e) {
-			}
-		} else if (displayType.equals(MINUTES_DISPLAY_TYPE)) {
-			costLeft = costLeft.replace("$", "");
-
-			try {
-				double costValue = Double.parseDouble(costLeft);
-				double mins = costValue / .1;
-				text = Math.round(mins) + " mins";
-			} catch (Exception e) {
-			}
-		}
-
-		return text;
+		return httpParts;
 	}
 
 	private String getValueInHtml(String html, String id) {
-		int mainAccountBalanceEndIndex = html.lastIndexOf(id);
+		int htmlValue = html.lastIndexOf(id);
 
-		int startIndex = html.indexOf(">", mainAccountBalanceEndIndex) + 1;
-		int endIndex = html.indexOf("<", mainAccountBalanceEndIndex);
+		int startIndex = html.indexOf(">", htmlValue) + 1;
+		int endIndex = html.indexOf("<", htmlValue);
 
 		return html.substring(startIndex, endIndex);
 	}
-
-	@Override
-	public void onEnabled(Context context) {
-		super.onEnabled(context);
-		System.out.println("onEnabled");
-	}
-
-	@Override
-	public void onDisabled(Context context) {
-		super.onDisabled(context);
-		System.out.println("onDisabled");
-
-	}
-
-	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
-		super.onDeleted(context, appWidgetIds);
-		System.out.println("onDeleted");
-
-	}
-	
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-            int appWidgetId, String phoneNumber) {
-    	
-        AppWidgetManager man = AppWidgetManager.getInstance(context);
-        int[] ids = man.getAppWidgetIds(
-                new ComponentName(context,AirvoiceDisplay.class));
-        Intent updateIntent = new Intent();
-        updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        updateIntent.putExtra(AirvoiceDisplay.WIDGET_IDS_KEY, ids);
-        context.sendBroadcast(updateIntent);
-    }
 }
