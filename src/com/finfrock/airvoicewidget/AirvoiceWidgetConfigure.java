@@ -93,7 +93,7 @@ public class AirvoiceWidgetConfigure extends Activity {
 		String displayType = getSelectedRadioButtonText();
 
 		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType);
-
+ 
 		updateAppWidget();
 
 		// Make sure we pass back the original appWidgetId

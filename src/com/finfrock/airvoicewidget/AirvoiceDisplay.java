@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.widget.RemoteViews;
 
 public class AirvoiceDisplay extends AppWidgetProvider {
-
 	public static final String WIDGET_IDS_KEY = "mywidgetproviderwidgetids";
 	
 	private static final String NO_DATA_FOUND_TAG = "---";
@@ -21,6 +20,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	private static final String MONEY_DISPLAY_TYPE = "Money";
 	private static final String DATA_DISPLAY_TYPE = "Data";
 	private static final String MINUTES_DISPLAY_TYPE = "Minutes";
+	
 	// -------------------------------------------------------------------------
 	// Private Data
 	// -------------------------------------------------------------------------
@@ -61,8 +61,10 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		public Context context;
 		public int appWidgetId;
 		public String widgetText;
+		public String dateText;
 		public AppWidgetManager appWidgetManager;
 		public int[] appWidgetIds;
+		public Boolean error;
 	}
 	
 	private void update(Context context, AppWidgetManager appWidgetManager,
@@ -77,13 +79,14 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 			startBackgroundRequest(context, appWidgetId, 
 					appWidgetManager, appWidgetIds, phoneNumber, displayType);
 			
-			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-					R.layout.main);
-
-			remoteViews.setTextViewText(R.id.dataTextView, "---");
-
-			appWidgetManager.updateAppWidget(appWidgetId,
-					remoteViews);
+//			RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+//					R.layout.main);
+//
+//			remoteViews.setTextViewText(R.id.dataTextView, NO_DATA_FOUND_TAG);
+//			remoteViews.setTextViewText(R.id.dateText, MISSING_DATE);
+//
+//			appWidgetManager.updateAppWidget(appWidgetId,
+//					remoteViews);
 		}
 	}
 	
@@ -105,7 +108,15 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 					String phoneNumber = (String) args[4];
 					String displayType = (String) args[5];
 
-					storage.widgetText = getTextForWidget(phoneNumber, displayType);
+					RawData rawData = getRawData(phoneNumber);
+					if(rawData != null){
+						storage.widgetText = getTextForWidget(rawData, displayType);
+						storage.dateText = "exp: " + rawData.expireDate;
+						storage.error = false;
+					}
+					else{
+						storage.error = true;
+					}
 
 					return storage;
 				} catch (Exception e) {
@@ -114,21 +125,25 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 			}
 
 			protected void onPostExecute(Storage storage) {
-				RemoteViews remoteViews = buildRemoteViews(storage.context,
-						storage.widgetText, storage.appWidgetIds, storage.appWidgetId);
+				if (!storage.error) {
+					RemoteViews remoteViews = buildRemoteViews(storage.context,
+							storage.widgetText, storage.dateText,
+							storage.appWidgetIds, storage.appWidgetId);
 
-				storage.appWidgetManager.updateAppWidget(storage.appWidgetId,
-						remoteViews);
+					storage.appWidgetManager.updateAppWidget(
+							storage.appWidgetId, remoteViews);
+				}
 			}
 		}).execute(context, appWidgetId, appWidgetManager, appWidgetIds, phoneNumber, displayType);
 	}
 	
-	private RemoteViews buildRemoteViews(Context context, String widgetText,
+	private RemoteViews buildRemoteViews(Context context, String widgetText, String dateText,
 			int[] appWidgetIds, int appWidgetId) {
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
 				R.layout.main);
 
 		remoteViews.setTextViewText(R.id.dataTextView, widgetText);
+		remoteViews.setTextViewText(R.id.dateText, dateText);
 
 		Intent intent = new Intent(context, AirvoiceDisplay.class);
 
@@ -147,30 +162,28 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		return remoteViews;
 	}
 	
-	private String getTextForWidget(String phoneNumber, String displayType) {
+	private String getTextForWidget(RawData rawData, String displayType) {
 
 		String text = NO_DATA_FOUND_TAG;
-
-		Double dollarValueAmountLeft = getDoubleAmountLeft(phoneNumber);
 		
-		if (dollarValueAmountLeft != null) {
+		if (rawData != null) {
 			if (displayType.equals(MONEY_DISPLAY_TYPE)) {
 				DecimalFormat df = new DecimalFormat("#.00");
-				text = "$" + df.format(dollarValueAmountLeft);
+				text = "$" + df.format(rawData.dollarValue);
 			} else if (displayType.equals(DATA_DISPLAY_TYPE)) {
-				double mbs = dollarValueAmountLeft / COST_PER_MB;
+				double mbs = rawData.dollarValue / COST_PER_MB;
 				DecimalFormat df = new DecimalFormat("#.00");
 				text = df.format(mbs) + " MB";
 			} else if (displayType.equals(MINUTES_DISPLAY_TYPE)) {
-				double mins = dollarValueAmountLeft / COST_PER_MINUTE;
+				double mins = rawData.dollarValue / COST_PER_MINUTE;
 				text = Math.round(mins) + " mins";
 			}
 		}
 		return text;
 	}
 	
-	private Double getDoubleAmountLeft(String phoneNumber) {
-		Double value = null;
+	private RawData getRawData(String phoneNumber) {
+		RawData value = null;
 		try {
 			HttpRetiever httpSender = new HttpRetiever();
 
@@ -182,10 +195,14 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 
 			String dollarValueAmountLeft = getValueInHtml(result,
 					"mainAccountBalance");
+			
+			String expireDate = getValueInHtml(result,
+					"airTimeExpirationDate");
 
 			if (dollarValueAmountLeft.contains("$")) {
-				
-				value = Double.parseDouble(dollarValueAmountLeft.replace("$", ""));
+				value = new RawData();
+				value.dollarValue = Double.parseDouble(dollarValueAmountLeft.replace("$", ""));
+				value.expireDate = expireDate;
 			}
 		} catch (Exception ex) {
 			System.out.println("in catch: " + ex.getMessage());
@@ -193,6 +210,11 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		}
 
 		return value;
+	}
+	
+	static class RawData{
+		public double dollarValue;
+		public String expireDate;
 	}
 	
 	private HttpPart[] buildHttpParts(String phoneNumber){

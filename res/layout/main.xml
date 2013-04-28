@@ -13,8 +13,8 @@
     	android:layout_height="wrap_content"
         android:gravity="top|center_horizontal"
         android:text="Airvoice Wireless"
-        android:background="#77999999"
-        android:textColor="@android:color/black"
+        android:background="#CC999999"
+        android:textColor="@android:color/white"
         android:textSize="8sp" />
     <TextView
         android:id="@+id/dataTextView"
@@ -25,5 +25,14 @@
         android:text="---"
         android:textColor="@android:color/black"
         android:textSize="10sp" />
+    <TextView
+        android:id="@+id/dateText"
+        android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:text="exp: -/-/-"
+        android:background="#CC999999"
+        android:textColor="@android:color/white"
+        android:textSize="8sp" />
 
 </LinearLayout>
