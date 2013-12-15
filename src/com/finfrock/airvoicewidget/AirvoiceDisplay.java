@@ -2,6 +2,10 @@ package com.finfrock.airvoicewidget;
 
 import java.text.DecimalFormat;
 
+import com.finfrock.airvoicewidget.plans.PayAsYouGoPlan;
+import com.finfrock.airvoicewidget.plans.Plan;
+import com.finfrock.airvoicewidget.plans.TenDollarPlan;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -15,8 +19,6 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	public static final String WIDGET_IDS_KEY = "mywidgetproviderwidgetids";
 	
 	private static final String NO_DATA_FOUND_TAG = "---";
-	private static final double COST_PER_MINUTE = 0.1;
-	private static final double COST_PER_MB = 0.33;
 	private static final String MONEY_DISPLAY_TYPE = "Money";
 	private static final String DATA_DISPLAY_TYPE = "Data";
 	private static final String MINUTES_DISPLAY_TYPE = "Minutes";
@@ -169,14 +171,14 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		if (rawData != null) {
 			if (displayType.equals(MONEY_DISPLAY_TYPE)) {
 				DecimalFormat df = new DecimalFormat("#.00");
-				text = "$" + df.format(rawData.dollarValue);
+				text = df.format(rawData.dollarValue);
 			} else if (displayType.equals(DATA_DISPLAY_TYPE)) {
-				double mbs = rawData.dollarValue / COST_PER_MB;
+				double mbs = rawData.dollarValue / rawData.plan.getCostPerMb();
 				DecimalFormat df = new DecimalFormat("#.00");
-				text = df.format(mbs) + " MB";
+				text = df.format(mbs);
 			} else if (displayType.equals(MINUTES_DISPLAY_TYPE)) {
-				double mins = rawData.dollarValue / COST_PER_MINUTE;
-				text = Math.round(mins) + " mins";
+				double mins = rawData.dollarValue / rawData.plan.getCostPerMinute();
+				text = Math.round(mins) + "";
 			}
 		}
 		return text;
@@ -198,11 +200,20 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 			
 			String expireDate = getValueInHtml(result,
 					"airTimeExpirationDate");
+			
+			String ratePlan = getValueInHtml(result,
+					"ratePlan");
 
 			if (dollarValueAmountLeft.contains("$")) {
 				value = new RawData();
 				value.dollarValue = Double.parseDouble(dollarValueAmountLeft.replace("$", ""));
 				value.expireDate = expireDate;
+				
+				if(ratePlan.contains("PAY AS YOU GO")){
+					value.plan = new PayAsYouGoPlan();
+				} else{
+					value.plan = new TenDollarPlan();
+				}
 			}
 		} catch (Exception ex) {
 			System.out.println("in catch: " + ex.getMessage());
@@ -215,6 +226,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	static class RawData{
 		public double dollarValue;
 		public String expireDate;
+		public Plan plan;
 	}
 	
 	private HttpPart[] buildHttpParts(String phoneNumber){
