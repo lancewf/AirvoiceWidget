@@ -76,6 +76,11 @@ public class AirvoiceWidgetConfigure extends Activity {
         return mPhoneNumber;
     }
     
+    private String getEnteredNameText(){
+    	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.nameTextBox);
+    	return mAppWidgetPrefix.getText().toString();
+    }
+    
     private String getSelectedRadioButtonText(){
     	RadioGroup displayTypeRadioGroup = (RadioGroup) findViewById(R.id.radioGroupDisplayType);
 		RadioButton selectedRadioButton = (RadioButton) findViewById(displayTypeRadioGroup
@@ -93,8 +98,10 @@ public class AirvoiceWidgetConfigure extends Activity {
 		String phoneNumber = getEnteredPhoneNumber();
 		
 		String displayType = getSelectedRadioButtonText();
+		
+		String name = getEnteredNameText();
 
-		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType);
+		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType, name);
  
 		updateAppWidget();
 

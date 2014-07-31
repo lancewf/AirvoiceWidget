@@ -46,6 +46,20 @@
             android:text="Money" />
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name:"
+        android:textSize="16dp" />
+
+    <EditText
+        android:id="@+id/nameTextBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="Airvoice Wireless" />
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"

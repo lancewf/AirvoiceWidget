@@ -139,6 +139,8 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 
 		remoteViews.setTextViewText(R.id.dataTextView, widgetText);
 		remoteViews.setTextViewText(R.id.dateText, dateText);
+        String name = sharedStorage.getNameLabel(context, appWidgetId);
+		remoteViews.setTextViewText(R.id.nameLabel, name);
 
 		Intent intent = new Intent(context, AirvoiceDisplay.class);
 
@@ -163,7 +165,6 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	private RawData getRawData(String phoneNumber) {
 		RawData value = null;
 		try {
-			Log.i("info", "sldfjk");
 			HttpRetiever httpSender = new HttpRetiever();
 
 			HttpPart[] httpParts = buildHttpParts(phoneNumber);
