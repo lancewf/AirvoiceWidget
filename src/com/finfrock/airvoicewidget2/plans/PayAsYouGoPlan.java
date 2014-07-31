@@ -18,14 +18,13 @@ public class PayAsYouGoPlan implements Plan {
 		String text = AirvoiceDisplay.NO_DATA_FOUND_TAG;
 		if (displayType.equals(AirvoiceDisplay.MONEY_DISPLAY_TYPE)) {
 			DecimalFormat df = new DecimalFormat("#.00");
-			text = df.format(dollarValue);
+			text = "$" + df.format(dollarValue);
 		} else if (displayType.equals(AirvoiceDisplay.DATA_DISPLAY_TYPE)) {
 			double mbs = dollarValue / getCostPerMb();
-			DecimalFormat df = new DecimalFormat("#.00");
-			text = df.format(mbs);
+			text = Math.round(mbs) + "mb";
 		} else if (displayType.equals(AirvoiceDisplay.MINUTES_DISPLAY_TYPE)) {
 			double mins = dollarValue / getCostPerMinute();
-			text = Math.round(mins) + "";
+			text = Math.round(mins) + "m";
 		}
 		return text;
 	}
