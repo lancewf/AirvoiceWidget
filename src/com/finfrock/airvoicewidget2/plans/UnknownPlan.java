@@ -12,4 +12,8 @@ public class UnknownPlan implements Plan {
 	public String getTextForWidget(Double dollarValue, String displayType) {
 		return "UNKN";
 	}
+	
+	public double getAmount(Double dollarValue, String displayType){
+		return 0.0;
+	}
 }

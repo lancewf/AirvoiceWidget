@@ -94,14 +94,22 @@ public class AirvoiceWidgetConfigure extends Activity {
     	return mAppWidgetPrefix.getText().toString();
     }
     
+    private int getWarningLimit(){
+    	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.warningLimitText);
+    	String rawText = mAppWidgetPrefix.getText().toString();
+    	return Integer.parseInt(rawText);
+    }
+    
 	private void saveButtonPressed() {
 		String phoneNumber = getEnteredPhoneNumber();
 		
 		String displayType = getSelectedRadioButtonText();
 		
 		String name = getEnteredNameText();
+		
+		int warningLimit = getWarningLimit();
 
-		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType, name);
+		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType, name, warningLimit);
  
 		updateAppWidget();
 

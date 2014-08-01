@@ -60,6 +60,21 @@
         android:ems="10"
         android:text="Airvoice Wireless" />
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Warning Amount:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/warningLimitText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:text="0" />
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"

@@ -12,4 +12,8 @@ public class UnlimitedPlan implements Plan {
 	public String getTextForWidget(Double dollarValue, String displayType) {
 		return "UNLIM";
 	}
+	
+	public double getAmount(Double dollarValue, String displayType){
+		return 0;
+	}
 }

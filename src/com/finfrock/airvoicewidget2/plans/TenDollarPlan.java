@@ -28,4 +28,19 @@ public class TenDollarPlan implements Plan {
 		}
 		return text;
 	}
+	
+	public double getAmount(Double dollarValue, String displayType){
+		double amount = 0;
+		if (displayType.equals(AirvoiceDisplay.MONEY_DISPLAY_TYPE)) {
+			amount = dollarValue;
+		} else if (displayType.equals(AirvoiceDisplay.DATA_DISPLAY_TYPE)) {
+			double mbs = dollarValue / getCostPerMb();
+			amount = mbs;
+		} else if (displayType.equals(AirvoiceDisplay.MINUTES_DISPLAY_TYPE)) {
+			double mins = dollarValue / getCostPerMinute();
+			amount = Math.round(mins);
+		}
+		
+		return amount;
+	}
 }

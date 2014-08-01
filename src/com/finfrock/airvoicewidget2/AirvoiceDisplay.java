@@ -12,6 +12,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -69,6 +70,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		public AppWidgetManager appWidgetManager;
 		public int[] appWidgetIds;
 		public Boolean error;
+		public int textColor;
 	}
 	
 	private void update(Context context, AppWidgetManager appWidgetManager,
@@ -79,9 +81,11 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 					context, appWidgetId);
 			String displayType = sharedStorage.getDisplayType(context,
 					appWidgetId);
+			int warningLimit = sharedStorage.getWarningLimit(context,
+					appWidgetId);
 			
 			startBackgroundRequest(context, appWidgetId, 
-					appWidgetManager, appWidgetIds, phoneNumber, displayType);
+					appWidgetManager, appWidgetIds, phoneNumber, displayType, warningLimit);
 		}
 	}
 	
@@ -90,7 +94,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	 */
 	private void startBackgroundRequest(Context context, int appWidgetId, 
 			AppWidgetManager appWidgetManager, int[] appWidgetIds, String phoneNumber,
-			String displayType){
+			String displayType, int warningLimit){
 		(new AsyncTask<Object, Void, Storage>(){
 			protected Storage doInBackground(Object... args) {
 				try {
@@ -102,15 +106,23 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 					storage.appWidgetIds = (int[]) args[3];
 					String phoneNumber = (String) args[4];
 					String displayType = (String) args[5];
+					int warningLimit = (Integer) args[6];
 
 					RawData rawData = getRawData(phoneNumber);
 					if(rawData != null){
 						storage.widgetText = rawData.plan.getTextForWidget(rawData.dollarValue, displayType);
 						storage.dateText = "exp: " + rawData.expireDate;
 						storage.error = false;
+						double amount = rawData.plan.getAmount(rawData.dollarValue, displayType);
+						if(amount > warningLimit){
+							storage.textColor = Color.BLACK;
+						} else{
+							storage.textColor = Color.RED;
+						}
 					}
 					else{
 						storage.error = true;
+						storage.textColor = Color.GRAY;
 					}
 
 					return storage;
@@ -122,17 +134,17 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 			protected void onPostExecute(Storage storage) {
 				if (!storage.error) {
 					RemoteViews remoteViews = buildRemoteViews(storage.context,
-							storage.widgetText, storage.dateText,
+							storage.widgetText, storage.dateText, storage.textColor,
 							storage.appWidgetIds, storage.appWidgetId);
 
 					storage.appWidgetManager.updateAppWidget(
 							storage.appWidgetId, remoteViews);
 				}
 			}
-		}).execute(context, appWidgetId, appWidgetManager, appWidgetIds, phoneNumber, displayType);
+		}).execute(context, appWidgetId, appWidgetManager, appWidgetIds, phoneNumber, displayType, warningLimit);
 	}
 	
-	private RemoteViews buildRemoteViews(Context context, String widgetText, String dateText,
+	private RemoteViews buildRemoteViews(Context context, String widgetText, String dateText, int textColor,
 			int[] appWidgetIds, int appWidgetId) {
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
 				R.layout.main);
@@ -141,6 +153,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		remoteViews.setTextViewText(R.id.dateText, dateText);
         String name = sharedStorage.getNameLabel(context, appWidgetId);
 		remoteViews.setTextViewText(R.id.nameLabel, name);
+		remoteViews.setTextColor(R.id.dataTextView, textColor);
 
 		Intent intent = new Intent(context, AirvoiceDisplay.class);
 
