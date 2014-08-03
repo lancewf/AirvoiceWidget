@@ -13,7 +13,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -25,6 +24,8 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	public static final String MONEY_DISPLAY_TYPE = "Money";
 	public static final String DATA_DISPLAY_TYPE = "Data";
 	public static final String MINUTES_DISPLAY_TYPE = "Minutes";
+    public static final String TOAST_ACTION = "com.example.android.stackwidget.TOAST_ACTION";
+    
 	
 	// -------------------------------------------------------------------------
 	// Private Data
@@ -38,7 +39,14 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (intent.hasExtra(WIDGET_IDS_KEY)) {
+		if (intent.getAction().equalsIgnoreCase(TOAST_ACTION)) {
+			Log.i("info", "bullshit");
+			Intent editIntent = new Intent().setClass(context, 
+                    AirvoiceWidgetEdit.class);
+			int appWidgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID);
+			editIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+			context.startActivity(editIntent);
+		} else if(intent.hasExtra(WIDGET_IDS_KEY)){
 			int[] ids = intent.getExtras().getIntArray(WIDGET_IDS_KEY);
 			onUpdate(context, AppWidgetManager.getInstance(context), ids);
 		} else {
@@ -84,9 +92,20 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 			int warningLimit = sharedStorage.getWarningLimit(context,
 					appWidgetId);
 			
-			startBackgroundRequest(context, appWidgetId, 
-					appWidgetManager, appWidgetIds, phoneNumber, displayType, warningLimit);
+			updateName(context, appWidgetManager, appWidgetId);
+			
+			startBackgroundRequest(context, appWidgetId, appWidgetManager, appWidgetIds, 
+					phoneNumber, displayType, warningLimit);
 		}
+	}
+	
+	private void updateName(Context context, AppWidgetManager appWidgetManager, int appWidgetId){
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+				R.layout.main);
+        String name = sharedStorage.getNameLabel(context, appWidgetId);
+		remoteViews.setTextViewText(R.id.nameLabel, name);
+		
+		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 	}
 	
 	/**
@@ -122,7 +141,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 					}
 					else{
 						storage.error = true;
-						storage.textColor = Color.GRAY;
+						storage.textColor = Color.GREEN;
 					}
 
 					return storage;
@@ -133,43 +152,31 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 
 			protected void onPostExecute(Storage storage) {
 				if (!storage.error) {
-					RemoteViews remoteViews = buildRemoteViews(storage.context,
+					updateWidget(storage.context,
 							storage.widgetText, storage.dateText, storage.textColor,
-							storage.appWidgetIds, storage.appWidgetId);
-
-					storage.appWidgetManager.updateAppWidget(
-							storage.appWidgetId, remoteViews);
+							storage.appWidgetIds, storage.appWidgetId, storage.appWidgetManager);
 				}
 			}
 		}).execute(context, appWidgetId, appWidgetManager, appWidgetIds, phoneNumber, displayType, warningLimit);
 	}
 	
-	private RemoteViews buildRemoteViews(Context context, String widgetText, String dateText, int textColor,
-			int[] appWidgetIds, int appWidgetId) {
+	private void updateWidget(Context context, String widgetText, String dateText, int textColor,
+			int[] appWidgetIds, int appWidgetId, AppWidgetManager appWidgetManager ) {
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
 				R.layout.main);
 
 		remoteViews.setTextViewText(R.id.dataTextView, widgetText);
 		remoteViews.setTextViewText(R.id.dateText, dateText);
-        String name = sharedStorage.getNameLabel(context, appWidgetId);
-		remoteViews.setTextViewText(R.id.nameLabel, name);
 		remoteViews.setTextColor(R.id.dataTextView, textColor);
 
-		Intent intent = new Intent(context, AirvoiceDisplay.class);
-
-		Uri data = Uri.withAppendedPath(Uri.parse("av" + "://widget/id/"),
-				String.valueOf(appWidgetId));
-		intent.setData(data);
-		intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
-				intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent);
-		remoteViews.setOnClickPendingIntent(R.id.dataTextView, pendingIntent);
-
-		return remoteViews;
+        // When we click the widget, we want to open our main activity.
+        Intent defineIntent2 = new Intent(context, AirvoiceWidgetEdit.class);
+        defineIntent2.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pendingIntent2 = PendingIntent.getActivity(context, 0, defineIntent2, 0);
+        remoteViews.setOnClickPendingIntent(R.id.dataTextView, pendingIntent2);
+        remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent2);
+        
+        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 	}
 	
 	/*
