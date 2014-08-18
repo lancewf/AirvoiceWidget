@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RemoteViews;
 
 public class AirvoiceWidgetEdit extends Activity {
 	// -------------------------------------------------------------------------
@@ -28,8 +29,6 @@ public class AirvoiceWidgetEdit extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.config);
 		setResult(RESULT_CANCELED);
-		Log.i("info", "AirvoiceWidgetEdit-onCreate id " + getAppWidgetId() + " name: " + sharedStorage.getNameLabel(this, getAppWidgetId()));
-
 		if (getAppWidgetId() != AppWidgetManager.INVALID_APPWIDGET_ID) {
 			setFields();
 
@@ -47,13 +46,15 @@ public class AirvoiceWidgetEdit extends Activity {
     @Override
 	public void onStart() {
     	super.onStart();
-    	Log.i("info", "AirvoiceWidgetEdit-onStart id " + getAppWidgetId() + " name: " + sharedStorage.getNameLabel(this, getAppWidgetId()));
+    	Log.i("info", "AirvoiceWidgetEdit-onStart id " + getAppWidgetId() + 
+    			" name: " + sharedStorage.getNameLabel(this, getAppWidgetId()));
     }
     
     @Override
 	public void onRestart() {
     	super.onRestart();
-    	Log.i("info", "AirvoiceWidgetEdit-onRestart id " + getAppWidgetId() + " name: " + sharedStorage.getNameLabel(this, getAppWidgetId()));
+    	Log.i("info", "AirvoiceWidgetEdit-onRestart id " + getAppWidgetId() + 
+    			" name: " + sharedStorage.getNameLabel(this, getAppWidgetId()));
     }
     
 	// -------------------------------------------------------------------------
@@ -139,9 +140,19 @@ public class AirvoiceWidgetEdit extends Activity {
 		
 		int warningLimit = getWarningLimit();
 
-		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType, name, warningLimit);
+		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, 
+				displayType, name, warningLimit);
  
-		updateAppWidget();
+		RemoteViews remoteViews = new RemoteViews(this.getPackageName(),
+				R.layout.main);
+		remoteViews.setTextViewText(R.id.dataTextView, 
+				AirvoiceDisplay.NO_DATA_FOUND_TAG);
+		
+		remoteViews.setTextViewText(R.id.nameLabel, name);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        appWidgetManager.updateAppWidget(getAppWidgetId(), remoteViews);
+		
+        sendUpdateRequestToWidgets();
 
 		// Make sure we pass back the original appWidgetId
 		Intent resultValue = new Intent();
@@ -150,7 +161,7 @@ public class AirvoiceWidgetEdit extends Activity {
 		finish();
 	}
 	
-	private void updateAppWidget(){
+	private void sendUpdateRequestToWidgets(){
 		int[] ids = new int[]{getAppWidgetId()};
 		
 		Intent updateIntent = new Intent();

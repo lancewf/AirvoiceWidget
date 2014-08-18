@@ -109,9 +109,10 @@ public class AirvoiceWidgetConfigure extends Activity {
 		
 		int warningLimit = getWarningLimit();
 
-		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, displayType, name, warningLimit);
+		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, 
+				displayType, name, warningLimit);
  
-		updateAppWidget();
+		sendUpdateRequestToWidgets();
 
 		// Make sure we pass back the original appWidgetId
 		Intent resultValue = new Intent();
@@ -120,7 +121,7 @@ public class AirvoiceWidgetConfigure extends Activity {
 		finish();
 	}
 	
-	private void updateAppWidget(){
+	private void sendUpdateRequestToWidgets(){
 		int[] ids = new int[]{getAppWidgetId()};
 		
 		Intent updateIntent = new Intent();

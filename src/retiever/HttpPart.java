@@ -1,4 +1,4 @@
-package com.finfrock.airvoicewidget2;
+package retiever;
 
 public class HttpPart {
     private String name;
