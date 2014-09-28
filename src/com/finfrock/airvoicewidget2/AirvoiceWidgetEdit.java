@@ -74,6 +74,8 @@ public class AirvoiceWidgetEdit extends Activity {
     	setPhoneNumber(phoneNumber);
     	int warningLimit = sharedStorage.getWarningLimit(this, getAppWidgetId());
     	setWarningLimit(warningLimit);
+    	int warningDays = sharedStorage.getWarningDays(this, getAppWidgetId());
+    	setWarningDays(warningDays);
     	String name = sharedStorage.getNameLabel(this, getAppWidgetId());
     	setNameText(name);
     	String displayType = sharedStorage.getDisplayType(this, getAppWidgetId());
@@ -131,6 +133,17 @@ public class AirvoiceWidgetEdit extends Activity {
     	mAppWidgetPrefix.setText(warningLimit + "");
     }
     
+    private void setWarningDays(int warningLimit){
+    	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.warningDaysEditText);
+    	mAppWidgetPrefix.setText(warningLimit + "");
+    }
+    
+    private int getWarningDays(){
+    	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.warningDaysEditText);
+    	String rawText = mAppWidgetPrefix.getText().toString();
+    	return Integer.parseInt(rawText);
+    }
+    
 	private void saveButtonPressed() {
 		String phoneNumber = getEnteredPhoneNumber();
 		
@@ -140,8 +153,10 @@ public class AirvoiceWidgetEdit extends Activity {
 		
 		int warningLimit = getWarningLimit();
 
+		int warningDays = getWarningDays();
+		
 		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, 
-				displayType, name, warningLimit);
+				displayType, name, warningLimit, warningDays);
  
 		RemoteViews remoteViews = new RemoteViews(this.getPackageName(),
 				R.layout.main);

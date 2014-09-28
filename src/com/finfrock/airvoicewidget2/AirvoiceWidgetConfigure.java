@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RemoteViews;
 
 public class AirvoiceWidgetConfigure extends Activity {
 	// -------------------------------------------------------------------------
@@ -100,6 +101,12 @@ public class AirvoiceWidgetConfigure extends Activity {
     	return Integer.parseInt(rawText);
     }
     
+    private int getWarningDays(){
+    	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.warningDaysEditText);
+    	String rawText = mAppWidgetPrefix.getText().toString();
+    	return Integer.parseInt(rawText);
+    }
+    
 	private void saveButtonPressed() {
 		String phoneNumber = getEnteredPhoneNumber();
 		
@@ -108,11 +115,20 @@ public class AirvoiceWidgetConfigure extends Activity {
 		String name = getEnteredNameText();
 		
 		int warningLimit = getWarningLimit();
+		
+		int warningDays = getWarningDays();
 
 		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, 
-				displayType, name, warningLimit);
+				displayType, name, warningLimit, warningDays);
  
 		sendUpdateRequestToWidgets();
+		
+		RemoteViews remoteViews = new RemoteViews(this.getPackageName(),
+				R.layout.main);
+		
+		remoteViews.setTextViewText(R.id.nameLabel, name);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        appWidgetManager.updateAppWidget(getAppWidgetId(), remoteViews);
 
 		// Make sure we pass back the original appWidgetId
 		Intent resultValue = new Intent();

@@ -1,5 +1,8 @@
 package com.finfrock.airvoicewidget2;
 
+import java.util.Calendar;
+
+import retiever.DataParser;
 import retiever.DataRetiever;
 import retiever.RawAirvoiceData;
 
@@ -13,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.RemoteViews;
+import android.util.Log;
 
 public class AirvoiceDisplay extends AppWidgetProvider {
 	public static final String WIDGET_IDS_KEY = "mywidgetproviderwidgetids";
@@ -29,6 +33,7 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	// -------------------------------------------------------------------------
 
 	private SharedStorage sharedStorage = new SharedStorage();
+	private CacheStorage cacheStorage = new CacheStorage();
 
 	// -------------------------------------------------------------------------
 	// AppWidgetProvider Members
@@ -64,33 +69,39 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 		public String valueText;
 		public String dateText;
 		public Boolean error;
-		public int textColor;
+		public int textAmountColor;
+		public int textDateColor;
 	}
 	
 	private void update(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		
 		for (int appWidgetId : appWidgetIds) {
-			String phoneNumber = sharedStorage.getPhoneNumber(
-					context, appWidgetId);
-			String displayType = sharedStorage.getDisplayType(context,
-					appWidgetId);
-			int warningLimit = sharedStorage.getWarningLimit(context,
-					appWidgetId);
+			updateWithCachedData(context, appWidgetManager, appWidgetId);
 			
-			updateStaticData(context, appWidgetManager, appWidgetId);
-			
-			updateDynamicData(context, appWidgetId, appWidgetManager, 
-					phoneNumber, displayType, warningLimit);
+			updateDynamicData(context, appWidgetId, appWidgetManager);
 		}
 	}
 	
-	private void updateStaticData(Context context, AppWidgetManager appWidgetManager, int appWidgetId){
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-				R.layout.main);
-        String name = sharedStorage.getNameLabel(context, appWidgetId);
-		remoteViews.setTextViewText(R.id.nameLabel, name);
-		
+	/**
+	 * This is needed because something there is a long wait. 
+	 * @param context
+	 * @param appWidgetManager
+	 * @param appWidgetId
+	 */
+	private void updateWithCachedData(Context context, AppWidgetManager appWidgetManager, int appWidgetId){
+		if (cacheStorage.isThereCachedData(context, appWidgetId)) {
+			String cachedRawDataString = cacheStorage.getRawCachedValue(
+					context, appWidgetId);
+			WidgetUpdateData widgetUpdateData = createWidgetUpdateData(
+					cachedRawDataString, context, appWidgetId);
+
+			writeOnWidget(context, appWidgetId, appWidgetManager,
+					widgetUpdateData);
+		}
+	}
+	
+	private void addWidgetEditClick(RemoteViews remoteViews, Context context, int appWidgetId){
 		Intent intent = new Intent();
 		intent.setClassName("com.finfrock.airvoicewidget2", 
 				"com.finfrock.airvoicewidget2.AirvoiceWidgetEdit");
@@ -99,60 +110,129 @@ public class AirvoiceDisplay extends AppWidgetProvider {
         PendingIntent pendingIntent2 = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.dataTextView, pendingIntent2);
         remoteViews.setOnClickPendingIntent(R.id.LinearLayout01, pendingIntent2);
+	}
+	
+	private void writeOnWidget(Context context, int appWidgetId, AppWidgetManager appWidgetManager,
+			WidgetUpdateData widgetUpdateData){
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+				R.layout.main);
+
+		if(widgetUpdateData != null){
+			if (!widgetUpdateData.error) {
+				remoteViews.setTextViewText(R.id.dataTextView,
+						widgetUpdateData.valueText);
+				remoteViews.setTextViewText(R.id.dateText,
+						widgetUpdateData.dateText);
+			}
+			
+			remoteViews.setTextColor(R.id.dataTextView,
+					widgetUpdateData.textAmountColor);
+			
+			remoteViews.setInt(R.id.dateText, "setBackgroundColor",
+					widgetUpdateData.textDateColor);
+		}
+
+        String name = sharedStorage.getNameLabel(context, appWidgetId);
+		remoteViews.setTextViewText(R.id.nameLabel, name);
 		
-		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+		addWidgetEditClick(remoteViews, context, appWidgetId );
+        
+        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+	}
+	
+	private int calcDaysToExpire(Calendar expireDate){
+		Calendar now = Calendar.getInstance();
+		
+		long diff = expireDate.getTimeInMillis() - now.getTimeInMillis();
+		
+		return (int) (diff / (24 * 60 * 60 * 1000));
+	}
+	
+	private WidgetUpdateData createWidgetUpdateData(String rawDataString, 
+			final Context context, final int appWidgetId){
+
+		WidgetUpdateData widgetUpdateData = new WidgetUpdateData();
+		
+		String displayType = sharedStorage.getDisplayType(context,
+				appWidgetId);
+		int warningLimit = sharedStorage.getWarningLimit(context,
+				appWidgetId);
+		int warningDays = sharedStorage.getWarningDays(context,
+				appWidgetId);
+		
+		DataParser dataParser = new DataParser();
+		RawAirvoiceData rawData = dataParser.parseRawData(rawDataString);
+		widgetUpdateData.valueText = rawData.plan.getTextForWidget(rawData.dollarValue, displayType);
+		widgetUpdateData.dateText = "exp: " + rawData.expireDate;
+		widgetUpdateData.error = false;
+		double amount = rawData.plan.getAmount(rawData.dollarValue, displayType);
+		int daysToExpire = calcDaysToExpire(rawData.expireCalendar);
+		
+		if(daysToExpire > warningDays){
+			widgetUpdateData.textDateColor = Color.GRAY;
+		} else{
+			widgetUpdateData.textDateColor = Color.RED;
+		}
+		
+		if(amount > warningLimit){
+			widgetUpdateData.textAmountColor = Color.BLACK;
+		} else{
+			widgetUpdateData.textAmountColor = Color.RED;
+		}
+		
+		return widgetUpdateData;
 	}
 	
 	/**
-	 * A background thread is created because any network request needs to be off the main thread
+	 * A background thread is created because any network request needs to be off the UI thread
 	 */
 	private void updateDynamicData(final Context context, final int appWidgetId, 
-			final AppWidgetManager appWidgetManager, final String phoneNumber,
-			final String displayType, final int warningLimit){
+			final AppWidgetManager appWidgetManager){
 		(new AsyncTask<Object, Void, WidgetUpdateData>(){
 			protected WidgetUpdateData doInBackground(Object... args) {
 				try {
-					WidgetUpdateData widgetUpdateData = new WidgetUpdateData();
-					DataRetiever dataRetiever = new DataRetiever();
-					RawAirvoiceData rawData = dataRetiever.getRawData(phoneNumber);
-					if(rawData != null){
-						widgetUpdateData.valueText = rawData.plan.getTextForWidget(rawData.dollarValue, displayType);
-						widgetUpdateData.dateText = "exp: " + rawData.expireDate;
-						widgetUpdateData.error = false;
-						double amount = rawData.plan.getAmount(rawData.dollarValue, displayType);
-						if(amount > warningLimit){
-							widgetUpdateData.textColor = Color.BLACK;
-						} else{
-							widgetUpdateData.textColor = Color.RED;
-						}
+					WidgetUpdateData widgetUpdateData = null;
+					String phoneNumber = sharedStorage.getPhoneNumber(
+							context, appWidgetId);
+					String rawDataString = getRawData(phoneNumber);
+					if(rawDataString != null){
+						cacheStorage.saveCacheData(context, appWidgetId, rawDataString);
+						
+						widgetUpdateData = createWidgetUpdateData(rawDataString, context, appWidgetId);
 					}
 					else{
-						widgetUpdateData.error = true;
-						widgetUpdateData.textColor = Color.GRAY;
+						if(cacheStorage.isThereCachedData(context, appWidgetId)){
+							String cachedRawDataString = cacheStorage.getRawCachedValue(context, appWidgetId);
+							widgetUpdateData = createWidgetUpdateData(cachedRawDataString, context, appWidgetId);
+						} else{
+							widgetUpdateData = new WidgetUpdateData();
+							widgetUpdateData.error = true;
+						}
+						
+						widgetUpdateData.textAmountColor = Color.GRAY;
 					}
 
 					return widgetUpdateData;
 				} catch (Exception e) {
+					Log.w("error", "error in background thread " + e.getMessage() + " " + e.getLocalizedMessage());
 					return null;
 				}
 			}
 
 			protected void onPostExecute(WidgetUpdateData widgetUpdateData) {
-				RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-						R.layout.main);
-
-				if (!widgetUpdateData.error) {
-					remoteViews.setTextViewText(R.id.dataTextView,
-							widgetUpdateData.valueText);
-					remoteViews.setTextViewText(R.id.dateText,
-							widgetUpdateData.dateText);
-				}
-				
-				remoteViews.setTextColor(R.id.dataTextView,
-						widgetUpdateData.textColor);
-		        
-		        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+				writeOnWidget(context, appWidgetId, appWidgetManager,
+						widgetUpdateData);
 			}
 		}).execute();
+	}
+	
+	private String getRawData(String phoneNumber){
+		String rawDataString = null;
+		if(phoneNumber != null){
+			DataRetiever dataRetiever = new DataRetiever();
+			rawDataString = dataRetiever.getRawData(phoneNumber);
+		}
+		
+		return rawDataString;
 	}
 }
