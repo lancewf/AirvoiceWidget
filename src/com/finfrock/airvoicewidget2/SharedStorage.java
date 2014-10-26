@@ -10,7 +10,9 @@ public class SharedStorage {
 	private static final String NAME_KEY = "name_";
 	private static final String WARNING_LIMIT_KEY = "warning_limit_";
 	private static final String WARNING_DAYS_KEY = "warning_days_";
-    private static final String PREFS_NAME = "com.finfrock.airvoicewidget2.AirvoiceDisplay";
+	private static final String HAS_SENT_WARNING_AMOUNT_NOTIFICATION = "has_sent_warning_amount_notification_";
+    private static final String HAS_SENT_WARNING_EXPIRE_NOTIFICATION = "has_sent_warning_expire_notification_";
+	private static final String PREFS_NAME = "com.finfrock.airvoicewidget2.AirvoiceDisplay";
     
     public void saveInformation(Context context, int appWidgetId, 
     		String phoneNumber, String displayType, String name, int warningLimit, 
@@ -21,6 +23,49 @@ public class SharedStorage {
         prefs.putString(NAME_KEY + appWidgetId, name);
         prefs.putInt(WARNING_LIMIT_KEY + appWidgetId, warningLimit);
         prefs.putInt(WARNING_DAYS_KEY + appWidgetId, warningDays);
+        prefs.putBoolean(HAS_SENT_WARNING_AMOUNT_NOTIFICATION + appWidgetId, false);
+        prefs.commit();
+    }
+    
+    public Boolean hasSentWarningAmountNotification(Context context, int appWidgetId){
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+		if (prefs != null) {
+			return prefs.getBoolean(HAS_SENT_WARNING_AMOUNT_NOTIFICATION + appWidgetId, false);
+		}
+		
+    	return false;
+    }
+    
+    public void setSentWarningAmountNotification(Context context, int appWidgetId){
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putBoolean(HAS_SENT_WARNING_AMOUNT_NOTIFICATION + appWidgetId, true);
+        prefs.commit();
+    }
+    
+    public void clearSentWarningAmountNotification(Context context, int appWidgetId){
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putBoolean(HAS_SENT_WARNING_AMOUNT_NOTIFICATION + appWidgetId, false);
+        prefs.commit();
+    }
+    
+    public Boolean hasSentWarningExpireNotification(Context context, int appWidgetId){
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+		if (prefs != null) {
+			return prefs.getBoolean(HAS_SENT_WARNING_EXPIRE_NOTIFICATION + appWidgetId, false);
+		}
+		
+    	return false;
+    }
+    
+    public void setSentWarningExpireNotification(Context context, int appWidgetId){
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putBoolean(HAS_SENT_WARNING_EXPIRE_NOTIFICATION + appWidgetId, true);
+        prefs.commit();
+    }
+    
+    public void clearSentWarningExpireNotification(Context context, int appWidgetId){
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putBoolean(HAS_SENT_WARNING_EXPIRE_NOTIFICATION + appWidgetId, false);
         prefs.commit();
     }
     

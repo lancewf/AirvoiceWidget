@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.finfrock.airvoicewidget2.plans.PayAsYouGoPlan;
 import com.finfrock.airvoicewidget2.plans.TenDollarPlan;
-import com.finfrock.airvoicewidget2.plans.UnknownPlan;
 import com.finfrock.airvoicewidget2.plans.UnlimitedPlan;
 
 public class DataParser {
@@ -41,7 +40,7 @@ public class DataParser {
 				} else if (ratePlan.contains("UNLIMITED")) {
 					value.plan = new UnlimitedPlan();
 				} else {
-					value.plan = new UnknownPlan();
+					return null;
 				}
 			}
 		} catch (Exception ex) {

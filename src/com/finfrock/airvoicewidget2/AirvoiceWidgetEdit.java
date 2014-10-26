@@ -1,6 +1,7 @@
 package com.finfrock.airvoicewidget2;
 
 import com.finfrock.airvoicewidget2.R;
+import com.finfrock.airvoicewidget2.plans.Plan;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RemoteViews;
 
 public class AirvoiceWidgetEdit extends Activity {
 	// -------------------------------------------------------------------------
@@ -85,11 +85,11 @@ public class AirvoiceWidgetEdit extends Activity {
     private void setRadioButton(String displayType){
     	RadioGroup displayTypeRadioGroup = (RadioGroup) findViewById(R.id.radioGroupDisplayType);
     	
-		if (displayType.equals(AirvoiceDisplay.MONEY_DISPLAY_TYPE)) {
+		if (displayType.equals(Plan.MONEY_DISPLAY_TYPE)) {
 			displayTypeRadioGroup.check(R.id.moneyRadio);
-		} else if (displayType.equals(AirvoiceDisplay.DATA_DISPLAY_TYPE)) {
+		} else if (displayType.equals(Plan.DATA_DISPLAY_TYPE)) {
 			displayTypeRadioGroup.check(R.id.dataRadio);
-		} else if (displayType.equals(AirvoiceDisplay.MINUTES_DISPLAY_TYPE)) {
+		} else if (displayType.equals(Plan.MINUTES_DISPLAY_TYPE)) {
 			displayTypeRadioGroup.check(R.id.minutesRadio);
 		}
     }
@@ -158,14 +158,9 @@ public class AirvoiceWidgetEdit extends Activity {
 		sharedStorage.saveInformation(this, getAppWidgetId(), phoneNumber, 
 				displayType, name, warningLimit, warningDays);
  
-		RemoteViews remoteViews = new RemoteViews(this.getPackageName(),
-				R.layout.main);
-		remoteViews.setTextViewText(R.id.dataTextView, 
-				AirvoiceDisplay.NO_DATA_FOUND_TAG);
+		WidgetRefresher widgetRefresher = new WidgetRefresher();
 		
-		remoteViews.setTextViewText(R.id.nameLabel, name);
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        appWidgetManager.updateAppWidget(getAppWidgetId(), remoteViews);
+		widgetRefresher.updateWidgetFromCache(this, getAppWidgetId());
 		
         sendUpdateRequestToWidgets();
 
