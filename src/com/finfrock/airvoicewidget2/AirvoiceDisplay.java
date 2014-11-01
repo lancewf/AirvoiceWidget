@@ -1,6 +1,8 @@
 package com.finfrock.airvoicewidget2;
 
+import retiever.DataParser;
 import retiever.DataRetiever;
+import retiever.RawAirvoiceData;
 
 import android.content.Intent;
 import android.appwidget.AppWidgetManager;
@@ -66,24 +68,29 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 	 * A background thread is created because any network request needs to be off the UI thread
 	 */
 	private void updateFromAirvoice(final Context context, final int appWidgetId){
-		(new AsyncTask<Object, Void, String>(){
-			protected String doInBackground(Object... args) {
+		(new AsyncTask<Object, Void, RawAirvoiceData>(){
+			protected RawAirvoiceData doInBackground(Object... args) {
 				try {
+					DataParser dataParser = new DataParser();
 					String phoneNumber = sharedStorage.getPhoneNumber(
 							context, appWidgetId);
 
-					return getRawData(phoneNumber);
+					String rawData = getRawData(phoneNumber);
+					
+					return dataParser.parseRawData(rawData);
 				} catch (Exception e) {
 					Log.w("error", "error in background thread " + e.getMessage() + " " + e.getLocalizedMessage());
 					return null;
 				}
 			}
 
-			protected void onPostExecute(String rawDataString) {
-				if(rawDataString == null){
+			protected void onPostExecute(RawAirvoiceData rawAirvoiceData) {
+				if(rawAirvoiceData == null){
 					widgetRefresher.updateWidgetFromCache(context, appWidgetId);
 				} else{
-					widgetRefresher.updateWidget(rawDataString, context, appWidgetId);
+					CacheStorage cacheStorage = new CacheStorage();
+					cacheStorage.saveCacheData(context, appWidgetId, rawAirvoiceData);
+					widgetRefresher.updateWidget(rawAirvoiceData, context, appWidgetId);
 				}
 			}
 			

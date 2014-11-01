@@ -16,7 +16,8 @@ public class DataRetiever {
 							"http://csi.airvoicewireless.com/ericssonTpspApiPublic.aspx",
 							httpParts);
 		} catch (Exception ex) {
-			Log.i("error", "error in DataRetiever: " + ex.getMessage());
+			ex.printStackTrace();
+			Log.e("error", "error in DataRetiever: " + ex.getMessage());
 		}
 
 		return result;
@@ -61,7 +62,7 @@ public class DataRetiever {
 	}
 	
 	private String getValueId(String html, String id) {
-		int htmlValueIndex = html.lastIndexOf(id);
+		int htmlValueIndex = html.lastIndexOf("\"" + id + "\"");
 		
 		int indexOfValueTag = html.indexOf("value=", htmlValueIndex) + 7;
 		

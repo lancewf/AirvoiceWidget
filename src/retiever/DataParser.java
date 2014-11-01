@@ -6,10 +6,6 @@ import java.util.Date;
 
 import android.util.Log;
 
-import com.finfrock.airvoicewidget2.plans.PayAsYouGoPlan;
-import com.finfrock.airvoicewidget2.plans.TenDollarPlan;
-import com.finfrock.airvoicewidget2.plans.UnlimitedPlan;
-
 public class DataParser {
 	
 	private SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
@@ -27,21 +23,14 @@ public class DataParser {
 			String ratePlan = getValueInHtml(rawData, "ratePlan");
 
 			if (dollarValueAmountLeft.contains("$")) {
-				value = new RawAirvoiceData();
-				value.dollarValue = Double.parseDouble(dollarValueAmountLeft
+				
+				float dollarValue = Float.parseFloat(dollarValueAmountLeft
 						.replace("$", ""));
-				value.expireDate = expireDate;
-				value.expireCalendar = parseToCalendar(expireDate);
-
-				if (ratePlan.contains("PAY AS YOU GO")) {
-					value.plan = new PayAsYouGoPlan();
-				} else if (ratePlan.contains("250 TALK OR 500 TEXT 30 DAYS")) {
-					value.plan = new TenDollarPlan();
-				} else if (ratePlan.contains("UNLIMITED")) {
-					value.plan = new UnlimitedPlan();
-				} else {
-					return null;
-				}
+				Calendar expireCalendar = parseToCalendar(expireDate);
+				String planText = ratePlan;
+				Calendar date = Calendar.getInstance();
+				
+				value = new RawAirvoiceData(dollarValue, expireCalendar, planText, date);
 			}
 		} catch (Exception ex) {
 			Log.i("error", ex.getMessage());

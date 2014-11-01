@@ -3,15 +3,15 @@ package com.finfrock.airvoicewidget2.plans;
 import java.text.DecimalFormat;
 
 public class TenDollarPlan implements Plan {
-	public double getCostPerMb(){
-		return 0.066;
+	public float getCostPerMb(){
+		return 0.066f;
 	}
 	
-	public double getCostPerMinute(){
-		return 0.04;
+	public float getCostPerMinute(){
+		return 0.04f;
 	}
 	
-	public String getTextForWidget(Double amount, String displayType) {
+	public String getTextForWidget(float amount, String displayType) {
 
 		String text = NO_DATA_FOUND_TAG;
 		if (displayType.equals(MONEY_DISPLAY_TYPE)) {
@@ -25,15 +25,15 @@ public class TenDollarPlan implements Plan {
 		return text;
 	}
 	
-	public double getAmount(Double dollarValue, String displayType){
-		double amount = 0;
+	public float getAmount(float dollarValue, String displayType){
+		float amount = 0.0f;
 		if (displayType.equals(MONEY_DISPLAY_TYPE)) {
 			amount = dollarValue;
 		} else if (displayType.equals(DATA_DISPLAY_TYPE)) {
-			double mbs = dollarValue / getCostPerMb();
+			float mbs = dollarValue / getCostPerMb();
 			amount = mbs;
 		} else if (displayType.equals(MINUTES_DISPLAY_TYPE)) {
-			double mins = dollarValue / getCostPerMinute();
+			float mins = dollarValue / getCostPerMinute();
 			amount = Math.round(mins);
 		}
 		

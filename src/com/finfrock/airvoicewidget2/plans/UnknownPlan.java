@@ -1,19 +1,19 @@
 package com.finfrock.airvoicewidget2.plans;
 
 public class UnknownPlan implements Plan {
-	public double getCostPerMb(){
-		return 0.000000000001;
+	public float getCostPerMb(){
+		return 0.000000000001f;
 	}
 	
-	public double getCostPerMinute(){
-		return 0.00000000001;
+	public float getCostPerMinute(){
+		return 0.00000000001f;
 	}
 	
-	public String getTextForWidget(Double dollarValue, String displayType) {
+	public String getTextForWidget(float dollarValue, String displayType) {
 		return "UNKN";
 	}
 	
-	public double getAmount(Double dollarValue, String displayType){
-		return 0.0;
+	public float getAmount(float dollarValue, String displayType){
+		return 0.0f;
 	}
 }
