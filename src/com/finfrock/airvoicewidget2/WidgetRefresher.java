@@ -3,6 +3,7 @@ package com.finfrock.airvoicewidget2;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.finfrock.airvoicewidget2.data.CacheStorage;
 import com.finfrock.airvoicewidget2.plans.Plan;
 import com.finfrock.airvoicewidget2.plans.PlanFactory;
 
@@ -114,8 +115,8 @@ public class WidgetRefresher {
 		float amount = plan.getAmount(rawData.getDollarValue(), displayType);
 		widgetUpdateData.valueText = plan.getTextForWidget(amount, displayType);
 		widgetUpdateData.dateText = "exp: "
-				+ formate.format(rawData.getExpireCalendar().getTime());
-		int daysToExpire = calcDaysToExpire(rawData.getExpireCalendar());
+				+ formate.format(rawData.getExpireDate().getTime());
+		int daysToExpire = calcDaysToExpire(rawData.getExpireDate());
 
 		if (daysToExpire > warningDays) {
 			widgetUpdateData.textDateColor = Color.GRAY;

@@ -1,5 +1,7 @@
 package com.finfrock.airvoicewidget2;
 
+import com.finfrock.airvoicewidget2.data.CacheStorage;
+
 import retiever.DataParser;
 import retiever.DataRetiever;
 import retiever.RawAirvoiceData;
@@ -77,9 +79,10 @@ public class AirvoiceDisplay extends AppWidgetProvider {
 
 					String rawData = getRawData(phoneNumber);
 					
-					return dataParser.parseRawData(rawData);
+					return dataParser.parseRawData(phoneNumber, rawData);
 				} catch (Exception e) {
-					Log.w("error", "error in background thread " + e.getMessage() + " " + e.getLocalizedMessage());
+					Log.w("error", "error in background thread " + 
+							e.getMessage() + " " + e.getLocalizedMessage());
 					return null;
 				}
 			}

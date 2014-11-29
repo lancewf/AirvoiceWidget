@@ -32,6 +32,7 @@ public class AirvoiceWidgetConfigure extends Activity {
 		setContentView(R.layout.config);
 		setResult(RESULT_CANCELED);
 
+		findViewById(R.id.graphButton).setVisibility(View.GONE);
 		if (getAppWidgetId() != AppWidgetManager.INVALID_APPWIDGET_ID) {
 			setPhonesPhoneNumberInPhoneNumberField();
 
@@ -129,7 +130,7 @@ public class AirvoiceWidgetConfigure extends Activity {
 		remoteViews.setTextViewText(R.id.nameLabel, name);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         appWidgetManager.updateAppWidget(getAppWidgetId(), remoteViews);
-
+        
 		// Make sure we pass back the original appWidgetId
 		Intent resultValue = new Intent();
 		resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getAppWidgetId());

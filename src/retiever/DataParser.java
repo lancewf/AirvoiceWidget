@@ -12,7 +12,7 @@ public class DataParser {
 	/*
 	 * 
 	 */
-	public RawAirvoiceData parseRawData(String rawData) {
+	public RawAirvoiceData parseRawData(String phoneNumber, String rawData) {
 		RawAirvoiceData value = null;
 		try {
 			String dollarValueAmountLeft = getValueInHtml(rawData,
@@ -30,7 +30,7 @@ public class DataParser {
 				String planText = ratePlan;
 				Calendar date = Calendar.getInstance();
 				
-				value = new RawAirvoiceData(dollarValue, expireCalendar, planText, date);
+				value = new RawAirvoiceData(phoneNumber, dollarValue, expireCalendar, planText, date);
 			}
 		} catch (Exception ex) {
 			Log.i("error", ex.getMessage());

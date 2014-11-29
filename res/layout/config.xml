@@ -1,99 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter your Airvoice phone number:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/editTextPhoneNumber"
+    <LinearLayout
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone" >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <requestFocus />
-    </EditText>
-
-    <RadioGroup
-        android:id="@+id/radioGroupDisplayType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <RadioButton
-            android:id="@+id/minutesRadio"
+        <TextView
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Minutes" />
+            android:text="Enter your Airvoice phone number:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <RadioButton
-            android:id="@+id/dataRadio"
+        <EditText
+            android:id="@+id/editTextPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="phone" >
+
+            <requestFocus />
+        </EditText>
+
+        <RadioGroup
+            android:id="@+id/radioGroupDisplayType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <RadioButton
+                android:id="@+id/minutesRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Minutes" />
+
+            <RadioButton
+                android:id="@+id/dataRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Data" />
+
+            <RadioButton
+                android:id="@+id/moneyRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Money" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Data" />
+            android:text="Name:"
+            android:textSize="16dp" />
 
-        <RadioButton
-            android:id="@+id/moneyRadio"
+        <EditText
+            android:id="@+id/nameTextBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="Airvoice Wireless" />
+
+        <TextView
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Money" />
-    </RadioGroup>
+            android:text="Amount Warning:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name:"
-        android:textSize="16dp" />
+        <EditText
+            android:id="@+id/warningLimitText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:text="0" />
 
-    <EditText
-        android:id="@+id/nameTextBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="Airvoice Wireless" />
+        <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expiration Warning:"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Amount Warning:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/warningDaysEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:text="0" />
 
-    <EditText
-        android:id="@+id/warningLimitText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:text="0" />
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" />
 
-    <TextView
-        android:id="@+id/TextView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Expiration Warning:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <Button
+            android:id="@+id/graphButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Graph" />
 
-    <EditText
-        android:id="@+id/warningDaysEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:text="0" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save" />
-
-</LinearLayout>
+</ScrollView>
