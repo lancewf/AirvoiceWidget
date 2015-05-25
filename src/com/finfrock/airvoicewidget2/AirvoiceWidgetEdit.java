@@ -3,17 +3,18 @@ package com.finfrock.airvoicewidget2;
 import com.finfrock.airvoicewidget2.R;
 import com.finfrock.airvoicewidget2.plans.Plan;
 
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-public class AirvoiceWidgetEdit extends Activity {
+public class AirvoiceWidgetEdit extends ActionBarActivity {
 	// -------------------------------------------------------------------------
 	// Private Data
 	// -------------------------------------------------------------------------
@@ -29,6 +30,8 @@ public class AirvoiceWidgetEdit extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.config);
 		setResult(RESULT_CANCELED);
+		ActionBar actionBar = getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 		if (getAppWidgetId() != AppWidgetManager.INVALID_APPWIDGET_ID) {
 			setFields();
 
@@ -38,16 +41,25 @@ public class AirvoiceWidgetEdit extends Activity {
 							saveButtonPressed();
 						}
 					});
-			findViewById(R.id.graphButton).setOnClickListener(
-					new View.OnClickListener() {
-						public void onClick(View v) {
-							showGraph();
-						}
-					});
 		} else {
 			finish();
 		}
 	}
+    
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        Intent newIntent=null;
+        try {
+             //you need to define the class with package name
+             newIntent = new Intent(this,Class.forName("com.finfrock.airvoicewidget2.AirvoiceInfoView"));
+             
+             newIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getAppWidgetId());
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return newIntent;
+    }
     
     @Override
 	public void onStart() {
@@ -148,16 +160,6 @@ public class AirvoiceWidgetEdit extends Activity {
     	EditText mAppWidgetPrefix = (EditText) findViewById(R.id.warningDaysEditText);
     	String rawText = mAppWidgetPrefix.getText().toString();
     	return Integer.parseInt(rawText);
-    }
-    
-    private void showGraph(){
-        Intent intent = new Intent().setClass(this, 
-        		GraphActivity.class);
-        String phoneNumber = sharedStorage.getPhoneNumber(this, getAppWidgetId());
-        String name = sharedStorage.getNameLabel(this, getAppWidgetId());
-        intent.putExtra("phoneNumber", phoneNumber);
-        intent.putExtra("name", name);
-        this.startActivity(intent);
     }
     
 	private void saveButtonPressed() {

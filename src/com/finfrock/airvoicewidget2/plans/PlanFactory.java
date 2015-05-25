@@ -7,7 +7,7 @@ public class PlanFactory {
 			return new PayAsYouGoPlan();
 		} else if (planText.contains("250 TALK OR 500 TEXT 30 DAYS")) {
 			return new TenDollarPlan();
-		} else if (planText.contains("UNLIMITED")) {
+		} else if (planText.toUpperCase().contains("UNLIMITED")) {
 			return new UnlimitedPlan();
 		} else {
 			return null;

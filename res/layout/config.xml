@@ -102,12 +102,6 @@
             android:layout_height="wrap_content"
             android:text="Save" />
 
-        <Button
-            android:id="@+id/graphButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Graph" />
-
     </LinearLayout>
 
 </ScrollView>

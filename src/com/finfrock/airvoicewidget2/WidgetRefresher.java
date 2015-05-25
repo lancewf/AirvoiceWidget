@@ -93,7 +93,7 @@ public class WidgetRefresher {
 			int appWidgetId) {
 		Intent intent = new Intent();
 		intent.setClassName("com.finfrock.airvoicewidget2",
-				"com.finfrock.airvoicewidget2.AirvoiceWidgetEdit");
+				"com.finfrock.airvoicewidget2.AirvoiceInfoView");
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
 		PendingIntent pendingIntent2 = PendingIntent.getActivity(context,

@@ -32,7 +32,6 @@ public class AirvoiceWidgetConfigure extends Activity {
 		setContentView(R.layout.config);
 		setResult(RESULT_CANCELED);
 
-		findViewById(R.id.graphButton).setVisibility(View.GONE);
 		if (getAppWidgetId() != AppWidgetManager.INVALID_APPWIDGET_ID) {
 			setPhonesPhoneNumberInPhoneNumberField();
 
