@@ -1,0 +1,119 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:1:1-59:12
+	xmlns:android
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:1:11-69
+	package
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:2:5-43
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:4:5-33
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+	android:versionCode
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:3:5-29
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+uses-sdk
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:6:5-9:41
+MERGED from [com.android.support:appcompat-v7:21.0.3] C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\AndroidManifest.xml:15:5-42
+MERGED from [com.android.support:support-v4:21.0.3] C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\AndroidManifest.xml:15:5-42
+	android:targetSdkVersion
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:9:9-38
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:8:9-34
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml
+	android:maxSdkVersion
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:7:9-35
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:11:5-67
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:11:22-64
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:12:5-75
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:12:22-72
+application
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:14:5-57:19
+MERGED from [com.android.support:appcompat-v7:21.0.3] C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\AndroidManifest.xml:16:5-19
+MERGED from [com.android.support:support-v4:21.0.3] C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\AndroidManifest.xml:16:5-19
+	android:label
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:17:9-41
+	android:allowBackup
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:15:9-35
+	android:icon
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:16:9-45
+	android:logo
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:18:9-45
+activity#com.finfrock.airvoicewidget2.AirvoiceWidgetConfigure
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:19:9-25:20
+	android:screenOrientation
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:21:13-49
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:20:13-52
+intent-filter#android.appwidget.action.APPWIDGET_CONFIGURE
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:22:13-24:29
+action#android.appwidget.action.APPWIDGET_CONFIGURE
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:23:17-87
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:23:25-84
+receiver#com.finfrock.airvoicewidget2.AirvoiceDisplay
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:27:9-35:20
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:27:19-50
+intent-filter#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:28:13-30:29
+action#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:29:17-84
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:29:25-81
+meta-data#android.appwidget.provider
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:32:13-34:65
+	android:resource
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:34:17-62
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:33:17-58
+activity#com.finfrock.airvoicewidget2.AirvoiceWidgetEdit
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:37:9-42:62
+	android:screenOrientation
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:40:13-49
+	android:label
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:39:13-33
+	android:theme
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:41:13-57
+	android:parentActivityName
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:42:13-59
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:38:13-47
+meta-data#android.support.PARENT_ACTIVITY
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:43:10-45:50
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:44:14-60
+	android:value
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:45:14-47
+activity#com.finfrock.airvoicewidget2.GraphActivity
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:46:9-50:63
+	android:screenOrientation
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:49:13-50
+	android:label
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:48:13-45
+	android:theme
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:50:13-60
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:47:13-42
+activity#com.finfrock.airvoicewidget2.AirvoiceInfoView
+ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:51:9-56:60
+	android:screenOrientation
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:55:13-49
+	android:label
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:53:13-29
+	android:icon
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:54:13-49
+	android:theme
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:56:13-57
+	android:name
+		ADDED from C:\Users\lancewf\StudioProjects\AirvoiceWidget\app\src\main\AndroidManifest.xml:52:13-45

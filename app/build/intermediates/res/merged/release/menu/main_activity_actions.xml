@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/ic_action_settings"
+          android:icon="@drawable/ic_action_settings"
+          yourapp:showAsAction="ifRoom|withText"
+          android:title="Search"/>
+    <item android:id="@+id/action_purchase"
+          android:icon="@drawable/ic_action_add_to_queue"
+          yourapp:showAsAction="ifRoom|withText"
+          android:title="Purchase" />
+    <item android:id="@+id/ic_action_full_screen"
+          android:icon="@drawable/ic_action_full_screen"
+          yourapp:showAsAction="ifRoom|withText"
+          android:title="Full screen" />
+</menu>
